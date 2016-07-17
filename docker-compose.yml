@@ -1,0 +1,34 @@
+version: '2'
+services:
+  update-daemon:
+    build: ./update-daemon
+    restart: always
+    volumes:
+      - "/docker/web/wwwroot:/srv/http"
+    links:
+      - db
+  db:
+    image: postgres:9.4.8
+    volumes:
+      - "/docker/tt-rss/db:/var/lib/postgresql/data"
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: ttrss
+      POSTGRES_USER: ttrss
+      POSTGRES_DB: ttrss
+      PGDATA: /var/lib/postgresql/data/pgdata
+  web:
+    image: nginx:stable
+    volumes:
+      - "/docker/web/wwwroot:/srv/http"
+      - "/docker/web/config/site.conf:/etc/nginx/conf.d/site.conf"
+      - "/docker/web/config/certs:/etc/nginx/certs"
+    ports:
+      - "443:443"
+    links:
+      - db
+      - php
+  php:
+    build: ./php
+    volumes:
+      - "/docker/web/wwwroot:/srv/http"
