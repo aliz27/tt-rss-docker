@@ -5,12 +5,14 @@ services:
     restart: always
     volumes:
       - "/docker/web/wwwroot:/srv/http"
+      - "/etc/localtime:/etc/localtime"
     links:
       - db
   db:
-    image: postgres:9.4.8
+    image: postgres:9.4
     volumes:
       - "/docker/tt-rss/db:/var/lib/postgresql/data"
+      - "/etc/localtime:/etc/localtime"
     restart: always
     environment:
       POSTGRES_PASSWORD: ttrss
@@ -23,6 +25,7 @@ services:
       - "/docker/web/wwwroot:/srv/http"
       - "/docker/web/config/site.conf:/etc/nginx/conf.d/site.conf"
       - "/docker/web/config/certs:/etc/nginx/certs"
+      - "/etc/localtime:/etc/localtime"
     ports:
       - "443:443"
     links:
